@@ -454,3 +454,126 @@ The audio engine itself lives in a separate file (`pacman-audio.js`) for clean s
 Open `PAC-MAN.html` in any modern browser. No build step or server required.
 
 Click or tap the page to insert a coin and start playing. A second click during gameplay activates 2-player mode (Ms. PAC-MAN joins with WASD controls).
+
+---
+
+## EAT BEER Anpassungen
+
+Dieses Repository enthält eine vollständig angepasste Version des Google Pac-Man Doodles für das EAT BEER-Projekt. Die folgende Dokumentation beschreibt alle Änderungen gegenüber dem ursprünglichen Code.
+
+🌐 **Live spielen:** [https://ndackw93.github.io/eatbeer-pacman/](https://ndackw93.github.io/eatbeer-pacman/)
+
+---
+
+### Branding & Optik
+
+Das Spiel wurde visuell vollständig auf die EAT BEER-Marke umgestellt:
+
+- **Eigenes Sprite-Sheet** (`eatbeerpacman10-hp-sprite.png`): Pac-Man frisst Bierkrüge statt Punkte; die Geister tragen die Namen der vier Verlustquellen einer Brauerei (Material Loss, Energy Burn, Process Waste, Lost Value)
+- **Zweiphasiger Hintergrund**:
+  - Vor dem Start: `eatbeer-bg-final-retro.png` — Splash-Screen im Retro-Look
+  - Nach Klick auf START: Wechsel zu `eatbeer-bg-retro-2.png` — ein rahmenbildendes Artwork mit freiem Spielfeld-Bereich in der Mitte
+- **Dynamische Canvas-Positionierung** (`index.html`): Ein JavaScript-Resize-Handler (`ebPositionGameCanvas`) berechnet beim Laden und bei jedem Fensterwechsel exakt, wo das Spielfeld im Hintergrundbild platziert und wie stark es skaliert werden muss (`transform: scale()`), damit es pixelgenau im dunklen Rahmenbereich des Artworks sitzt — unabhängig von der Auflösung oder Fenstergröße
+- **„EAT BEER"-Wasserzeichen** im Spielfeld als halbtransparentes CSS-Pseudoelement
+
+---
+
+### Sprachauswahl
+
+Beim ersten Seitenaufruf erscheint ein Overlay zur Sprachwahl (Deutsch / Englisch). Die gewählte Sprache (`window.ebLanguage`) steuert alle nachfolgenden Popup-Texte.
+
+---
+
+### Popup-System (`eatbeer-extensions.js`)
+
+Eine neue Datei `eatbeer-extensions.js` erweitert das Spiel um ein zweisprachiges Lehr-Popup-System:
+
+| Auslöser | Inhalt | Anzahl Varianten |
+|---|---|---|
+| Energizer gefressen | Erklärt einen EAT BEER-Kreislaufprozess (Biertreber, CO₂, Hefe, Verpackung, Abwärme) | 5, rotierend |
+| Spieler stirbt (Geist berührt) | Erklärt die thematische Verlustquelle des jeweiligen Geistes | 4 (je Geist) |
+| Alle Geister besiegt | Gewinn-Popup | 1 |
+
+Das Spiel pausiert während eines Popups; nach Bestätigung läuft es weiter (`ebResumeCallback`-Mechanismus).
+
+---
+
+### Ghost-KI: BFS-Wegfindung
+
+**Problem:** Der originale Algorithmus für Modi 1 (Chase), 2 (Scatter) und 8 (Augen/Rückkehr zum Pen) wählt an jeder Kreuzung die Richtung mit der kürzesten euklidischen Distanz zum Ziel. In einem breiten, wandreichen Bereich des Labyrinths (Zeilen 7–10, Spalten 26–28) führt dies zu einer Endlosschleife, weil die direkte Luftlinie durch eine Wand blockiert ist.
+
+**Lösung:** Die Funktion `game.findModeEightDirection()` wurde auf einen **Breitensuche-Algorithmus (BFS)** umgestellt, der den tatsächlich kürzesten Weg durch begehbare Tiles findet. Ein neuer Parameter `allowGhostHouse` steuert, ob Ghost-House-Tiles passierbar sind (nur für Modus 8 benötigt, nicht für Modi 1/2).
+
+```javascript
+// Modus 8 (Rückkehr zum Pen): Ghost-House-Tiles erlaubt
+var bfsDir = game.findModeEightDirection(c, this.targetPos, TRUE);
+
+// Modus 1/2 (Chase/Scatter): Ghost-House-Tiles gesperrt
+var bfsDir12 = game.findModeEightDirection(c, this.targetPos, FALSE);
+```
+
+---
+
+### Gewinnbedingung: permanentFright
+
+Eine vollständig neue Spielmechanik wurde eingebaut: Sobald alle **4 Energizer** gefressen wurden, aktiviert sich `game.permanentFright`. Die Geister bleiben dauerhaft im Fright-Modus (blau). Frisst der Spieler alle **4 Geister**, erscheint das Gewinn-Popup.
+
+Dazu wurden folgende Änderungen vorgenommen:
+
+#### Bug 1 — Geist tritt nach Rückkehr aus dem Pen im falschen Modus auf
+Im Original wird beim Verlassen des Pens nach dem Aufgefressenwerden (Modus 128) der Geist in `lastMainGhostMode` (Chase/Scatter) gesetzt, wenn `mainGhostMode == 4`. Das ist korrekt, wenn Fright gleich endet — aber falsch bei `permanentFright`, wo Fright nie endet. Der Geist wurde dadurch unsichtbar und konnte den Spieler töten.
+
+**Fix** (`advanceToNextRoutineMove`):
+```javascript
+// Vorher:
+if (this.mode == 128 && b == 4) b = game.lastMainGhostMode;
+// Nachher:
+if (this.mode == 128 && b == 4 && !game.permanentFright) b = game.lastMainGhostMode;
+```
+
+#### Bug 2 — Permanent gefressener Geist wird nach `newLife()` unsichtbar aktiv
+`Actor.prototype.reset()` hat `permanentlyEaten` und `el.style.display` nicht zurückgesetzt. Nach dem Tod des Spielers wurde der permanent-gefressene Geist unsichtbar neu positioniert und in Scatter-Mode versetzt, konnte aber trotzdem kollidieren und den Spieler töten.
+
+**Fix A** (`reset()`): `permanentlyEaten = FALSE` und `el.style.display = ''` werden jetzt beim Reset gesetzt.
+
+**Fix B** (`detectCollisions()`): Zusätzliche Absicherung — permanent gefressene Geister können nie `playerDies()` auslösen:
+```javascript
+!game.actors[b].permanentlyEaten && game.playerDies(c)
+```
+
+#### Sound-Fix — Ambient-Eyes-Sound spielt während permanentFright
+`game.ghostEyesCount++` wurde bei jedem gefressenen Geist ausgeführt, auch wenn der Geist direkt in Modus 16 (permanent, kein Rückkehrweg) gesetzt wurde. Dadurch wählte `playAmbientSound()` dauerhaft den `ambient-eyes`-Track statt `ambient-fright`.
+
+**Fix** (`handleGameplayModeTimer`): `ghostEyesCount++` wird jetzt nur noch im `else`-Zweig ausgeführt, wenn der Geist tatsächlich in Modus 8 (Augen, Rückkehr) versetzt wird.
+
+---
+
+### Code-Bereinigung & Performance
+
+| Maßnahme | Einsparung |
+|---|---|
+| `google-script.js` (97 KB) durch 7-Zeilen-Stub ersetzt — nur `google.dom.append`, `google.dom.remove` und `google.browser.engine.IE` werden tatsächlich genutzt | 96,5 KB |
+| 6 ungenutzte Bild-Assets gelöscht (`beer-dot.png`, `*_old.png`, Legacy-Sprites) | ~620 KB |
+| 4 PowerShell-Entwicklungsskripte gelöscht (`scan*.ps1`, `gensegments.ps1`) | ~9 KB |
+| `index.html` lädt `google-script.js` nicht mehr dynamisch — `google.pml()` wird direkt aufgerufen | 1 HTTP-Request gespart |
+| **Gesamt** | **~725 KB** |
+
+---
+
+### Projektstruktur (EAT BEER-Version)
+
+```
+eatbeer-pacman-main/
+├── index.html                      # Haupt-Einstiegspunkt mit Sprachauswahl, Popup-Overlay und Canvas-Positionierung
+├── pacman.js                       # Kernspiellogie (angepasst: BFS-Wegfindung, permanentFright, Bug-Fixes)
+├── pacman-audio.js                 # Web Audio API Synthesizer (unverändert)
+├── eatbeer-extensions.js           # EAT BEER Popup-System (neu)
+├── google-script.js                # Minimaler Stub (7 Zeilen, ersetzt 97 KB Original)
+├── eatbeer-bg-final-retro.png      # Splash-Screen Hintergrundbild
+├── eatbeer-bg-retro-2.png          # Gameplay-Hintergrundbild mit Rahmen-Artwork
+├── eatbeerpacman10-hp-sprite.png   # Angepasstes Sprite-Sheet (Bierkrüge, EAT BEER Geister)
+├── PAC-MAN.html                    # Alternativer Entwicklungs-Einstiegspunkt
+├── maze-editor.html                # Entwicklungstool: Labyrinth-Editor
+├── original/                       # Archiv: unveränderter Original-Code
+└── README.md
+```
