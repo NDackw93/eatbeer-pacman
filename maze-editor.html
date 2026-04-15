@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Maze Editor – EAT BEER Pac-Man</title>
+<style>
+  body { background:#111; color:#eee; font-family:monospace; padding:16px; user-select:none; margin:0; }
+  h1 { font-size:13px; color:#ff0; margin:0 0 3px; }
+  .hint { font-size:11px; color:#888; margin:0 0 6px; }
+  #info { font-size:12px; height:16px; margin-bottom:5px; color:#0ff; }
+  canvas { display:block; border:1px solid #444; cursor:crosshair; image-rendering:pixelated; }
+  #controls { margin:8px 0 6px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  button { padding:4px 14px; font-family:monospace; font-size:12px; cursor:pointer; background:#222; color:#eee; border:1px solid #555; border-radius:3px; }
+  button:hover { background:#444; }
+  #copymsg { color:#0f0; font-size:12px; }
+  .legend { display:flex; gap:12px; font-size:11px; }
+  .li { display:flex; align-items:center; gap:5px; }
+  .lb { width:14px; height:14px; border:1px solid #666; display:inline-block; flex-shrink:0; }
+  #output, #spawn-output {
+    display:block; width:100%; max-width:940px;
+    background:#000; color:#0f0; font-family:monospace; font-size:11px;
+    border:1px solid #444; padding:8px; box-sizing:border-box; resize:vertical;
+  }
+  .label { font-size:11px; color:#888; margin-bottom:3px; margin-top:10px; }
+  #mode-spawn { background:#333; color:#ff0; border-color:#aa0; }
+  #mode-spawn.active { background:#660; color:#ff0; border-color:#ff0; box-shadow:0 0 6px #ff0; }
+  #spawn-info { font-size:12px; color:#ff0; margin:6px 0 4px; min-height:16px; }
+  #load-status { font-size:11px; color:#0ff; min-height:14px; margin-bottom:4px; }
+  .btn-save { border-color:#3a7a3a !important; color:#6f6 !important; }
+  .btn-save:hover { background:#1a3a1a !important; }
+  #grid-wrap { display:flex; align-items:center; gap:6px; font-size:11px; color:#888; }
+  #grid-slider { width:80px; accent-color:#555; }
+</style>
+</head>
+<body>
+<h1>Maze Editor — EAT BEER Pac-Man &nbsp;|&nbsp; 17 Zeilen × 58 Spalten</h1>
+<p class="hint">
+  Linksklick: Tile-Typ umschalten &nbsp;(.→#→G→T→.) &nbsp;|&nbsp;
+  Ziehen: Pinsel-Modus &nbsp;|&nbsp;
+  Rechtsklick: direkt auf "." (Pfad) zurücksetzen
+</p>
+<div id="info">Hover über das Grid für Koordinaten…</div>
+<div id="load-status"></div>
+
+<canvas id="canvas" width="928" height="272"></canvas>
+<div id="grid-wrap" style="margin:4px 0 0;">
+  Grid <input id="grid-slider" type="range" min="0" max="100" value="13" oninput="gridOpacity=this.value/100;draw()"> <span id="grid-val">13%</span>
+</div>
+
+<div id="controls">
+  <button onclick="copyOutput()">Copy MAZE_MAP</button>
+  <span id="copymsg"></span>
+  <button id="btn-save-maze" class="btn-save" onclick="saveMazeToPacmanJs()" style="display:none">💾 MAZE_MAP speichern</button>
+  <button onclick="undo()">↩ Undo</button>
+  <button id="btn-pick" onclick="pickAndLoad()" style="display:none">📂 pacman.js laden</button>
+  <button onclick="reloadMaze()">🔄 Neu laden</button>
+  <button id="mode-spawn" onclick="toggleSpawnMode()">🎯 Spawn setzen</button>
+  <div class="legend">
+    <div class="li"><span class="lb" style="background:rgba(255,255,255,0.08)"></span>. Pfad</div>
+    <div class="li"><span class="lb" style="background:rgba(0,0,200,0.72)"></span># Wand</div>
+    <div class="li"><span class="lb" style="background:rgba(0,200,0,0.55)"></span>G Ghost House</div>
+    <div class="li"><span class="lb" style="background:rgba(0,200,220,0.55)"></span>T Tunnel</div>
+    <div class="li"><span class="lb" style="background:#ff0;border-radius:50%"></span>Pac-Man Spawn</div>
+  </div>
+</div>
+<div id="spawn-info"></div>
+
+<div class="label">MAZE_MAP — Copy &amp; paste in pacman.js:</div>
+<textarea id="output" rows="19" readonly spellcheck="false"></textarea>
+
+<div class="label">Pac-Man Spawn — Copy &amp; paste in pacman.js STARTING_POSITIONS:</div>
+<textarea id="spawn-output" rows="5" readonly spellcheck="false"></textarea>
+<button onclick="copySpawn()" style="margin-top:4px;">Copy Spawn</button>
+<button id="btn-save-spawn" class="btn-save" onclick="saveSpawnToPacmanJs()" style="display:none; margin-top:4px;">💾 Spawn speichern</button>
+<span id="spawn-copymsg"></span>
+
+<script>
+const COLS = 58, ROWS = 17, TS = 16;
+const SPRITE_X = 322, SPRITE_Y = 2;
+const CYCLE = ['.', '#', 'G', 'T'];
+
+const spawn = { x: 29, y: 13 };
+let spawnMode = false;
+let pacmanFileHandle = null;
+let gridOpacity = 0.13;
+
+const maze = [
+  "##########################################################",
+  "#........................................................#",
+  "#.###.#######.#####.GGGG.GGG.######..####....#####.#####.#",
+  "#.###.#.....#.#####.GGGG.GGG.#.#####.####....#####.#####.#",
+  "#.....#.#####.......GG.....G.#.#.#.#.##...####.####......#",
+  "#####.#.#....######.GG.....G.#.###.#.####.####.####..#####",
+  "TTTT#.#.####.######.GGGGGGGG.#.#####.####.##...####..#TTTT",
+  "#####.#.####.##..##....G.G...#.#.#.#.##...####.#.##..#####",
+  "#######.#....##..##....G.G...#.###.#.####.####.###########",
+  "#####.#.####.######....G.G...#######.####.##...####..#####",
+  "#####.#....#.######....G.G................####.####..#####",
+  "#####.######.##..##....GGG.##...########..####.####..#####",
+  "#...............................########.................#",
+  "#.####.##########.##.##########....##....#########.#####.#",
+  "#.####.##########.##.##########.##.##.##.#########.#####.#",
+  "#.................##............##....##.................#",
+  "##########################################################"
+].map(r => r.split(''));
+
+const canvas   = document.getElementById('canvas');
+const ctx      = canvas.getContext('2d');
+const infoEl   = document.getElementById('info');
+const outputEl = document.getElementById('output');
+let undoStack  = [];
+
+const sprite = new Image();
+sprite.src    = 'eatbeerpacman10-hp-sprite.png?v=' + Date.now();
+sprite.onload = sprite.onerror = () => draw();
+
+// --- Rendering ---
+function tileColor(t) {
+  if (t === '#') return 'rgba(0,0,200,0.68)';
+  if (t === 'G') return 'rgba(0,200,0,0.50)';
+  if (t === 'T') return 'rgba(0,200,220,0.50)';
+  return null;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const imgOK = sprite.complete && sprite.naturalWidth > 0;
+  if (imgOK) {
+    try { ctx.drawImage(sprite, SPRITE_X, SPRITE_Y, COLS * 8, ROWS * 8, 0, 0, COLS * TS, ROWS * TS); }
+    catch(e) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  } else { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      const color = tileColor(maze[r][c]);
+      if (color) { ctx.fillStyle = color; ctx.fillRect(c * TS, r * TS, TS, TS); }
+    }
+
+  document.getElementById('grid-val').textContent = Math.round(gridOpacity * 100) + '%';
+  ctx.strokeStyle = `rgba(255,255,255,${gridOpacity})`; ctx.lineWidth = 0.5;
+  for (let c = 0; c <= COLS; c++) { ctx.beginPath(); ctx.moveTo(c * TS, 0); ctx.lineTo(c * TS, ROWS * TS); ctx.stroke(); }
+  for (let r = 0; r <= ROWS; r++) { ctx.beginPath(); ctx.moveTo(0, r * TS); ctx.lineTo(COLS * TS, r * TS); ctx.stroke(); }
+
+  drawSpawnMarker(spawn.x - 1, spawn.y - 1, '#ffe600', 'P');
+  updateOutput();
+  updateSpawnOutput();
+}
+
+function drawSpawnMarker(col, row, color, label) {
+  const cx = col * TS + TS / 2, cy = row * TS + TS / 2, r = TS / 2 - 1;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = color; ctx.globalAlpha = 0.85; ctx.fill();
+  ctx.globalAlpha = 1; ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#000'; ctx.font = `bold ${TS * 0.6}px monospace`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(label, cx, cy + 1);
+}
+
+// --- pacman.js sync ---
+function parseMazeFromSource(text) {
+  const block = text.match(/MAZE_MAP\s*=\s*\[([\s\S]*?)\]/);
+  if (!block) return null;
+  const rows = [...block[1].matchAll(/"([#.GT]+)"/g)].map(m => m[1]);
+  if (rows.length !== ROWS || !rows.every(r => r.length === COLS)) return null;
+  return rows.map(r => r.split(''));
+}
+
+function parseSpawnFromSource(text) {
+  // Matches the 1P Pac-Man entry: {x: N, y: N, dir: 4} ... // Pac-Man  (not Pac-Man A/B)
+  const m = text.match(/\{x:\s*([\d.]+)\s*,\s*y:\s*([\d.]+)\s*,\s*dir:\s*4\s*\}[^\n]*\/\/\s*Pac-Man\s*$/m);
+  return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : null;
+}
+
+function setLoadStatus(msg, isError) {
+  const el = document.getElementById('load-status');
+  el.textContent = msg;
+  el.style.color = isError ? '#f66' : '#0ff';
+}
+
+function loadFromText(text, sourceName) {
+  const newMaze = parseMazeFromSource(text);
+  if (!newMaze) { setLoadStatus(`Fehler: MAZE_MAP nicht gefunden in "${sourceName}"`, true); return false; }
+  for (let r = 0; r < ROWS; r++) maze[r] = newMaze[r];
+  const sp = parseSpawnFromSource(text);
+  if (sp) { spawn.x = sp.x; spawn.y = sp.y; }
+  draw();
+  setLoadStatus(`\u2713 ${sourceName} geladen \u2014 ${newMaze.length} Zeilen`);
+  return true;
+}
+
+async function tryAutoLoad() {
+  showPickButton();
+  if (location.protocol === 'file:') return;
+  try {
+    const resp = await fetch('./pacman.js');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const ok = loadFromText(await resp.text(), 'pacman.js');
+    if (ok) setLoadStatus('\u2713 pacman.js geladen \u2014 f\xfcr Schreibzugriff: Datei per Button ausw\xe4hlen');
+  } catch(e) {
+    setLoadStatus('Auto-Load fehlgeschlagen \u2014 bitte pacman.js manuell laden.', true);
+  }
+}
+
+function showPickButton() {
+  const btn = document.getElementById('btn-pick');
+  if (btn) btn.style.display = '';
+}
+
+async function pickAndLoad() {
+  if (!window.showOpenFilePicker) {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = '.js';
+    input.onchange = async () => {
+      if (input.files.length) loadFromText(await input.files[0].text(), input.files[0].name);
+    };
+    input.click();
+    return;
+  }
+  try {
+    const [fh] = await window.showOpenFilePicker({
+      types: [{ description: 'JavaScript', accept: { 'text/javascript': ['.js'] } }],
+      multiple: false
+    });
+    pacmanFileHandle = fh;
+    const file = await fh.getFile();
+    loadFromText(await file.text(), file.name);
+    updateSaveButtons();
+  } catch(e) {
+    if (e.name !== 'AbortError') setLoadStatus(`Fehler: ${e.message}`, true);
+  }
+}
+
+async function reloadMaze() { await tryAutoLoad(); }
+
+// --- Direct save to pacman.js ---
+function updateSaveButtons() {
+  const show = !!pacmanFileHandle;
+  document.getElementById('btn-save-maze').style.display  = show ? '' : 'none';
+  document.getElementById('btn-save-spawn').style.display = show ? '' : 'none';
+}
+
+async function writeToPacmanJs(newText) {
+  try {
+    const w = await pacmanFileHandle.createWritable();
+    await w.write(newText); await w.close();
+    return true;
+  } catch(e) { setLoadStatus(`Fehler beim Schreiben: ${e.message}`, true); return false; }
+}
+
+async function saveMazeToPacmanJs() {
+  if (!pacmanFileHandle) { setLoadStatus('Kein pacman.js geladen.', true); return; }
+  const text = await (await pacmanFileHandle.getFile()).text();
+  const newBlock =
+    `MAZE_MAP = [\n` +
+    `            // 17 rows x 58 cols \u2014 '.' path  '#' wall  'G' ghost house  'T' tunnel\n` +
+    maze.map((row, i) => {
+      const comma = i < ROWS - 1 ? ',' : '';
+      return `            "${row.join('')}"${comma}  // row ${i}  y=${i+1}`;
+    }).join('\n') + `\n        ]`;
+  const newText = text.replace(/MAZE_MAP\s*=\s*\[[\s\S]*?\]/, newBlock);
+  if (newText === text) { setLoadStatus('MAZE_MAP nicht gefunden \u2014 nichts ge\xe4ndert.', true); return; }
+  if (await writeToPacmanJs(newText)) setLoadStatus('\u2713 MAZE_MAP in pacman.js gespeichert');
+}
+
+async function saveSpawnToPacmanJs() {
+  if (!pacmanFileHandle) { setLoadStatus('Kein pacman.js geladen.', true); return; }
+  let text = await (await pacmanFileHandle.getFile()).text();
+  const x = spawn.x, y = spawn.y;
+  text = text.replace(
+    /(\{x:\s*)[\d.]+(\s*,\s*y:\s*)[\d.]+(,\s*dir:\s*4\s*\}[^\n]*?\/\/\s*Pac-Man)\s*$/m,
+    `$1${x}$2${y}$3`
+  );
+  text = text.replace(
+    /(\{x:\s*)[\d.]+(\s*,\s*y:\s*)[\d.]+(,\s*dir:\s*8\s*\}[^\n]*?\/\/\s*Pac-Man A)\s*$/m,
+    `$1${x + 0.5}$2${y}$3`
+  );
+  text = text.replace(
+    /(\{x:\s*)[\d.]+(\s*,\s*y:\s*)[\d.]+(,\s*dir:\s*4\s*\}[^\n]*?\/\/\s*Pac-Man B)\s*$/m,
+    `$1${x - 0.5}$2${y}$3`
+  );
+  if (await writeToPacmanJs(text)) setLoadStatus(`\u2713 Spawn (x=${x}, y=${y}) in pacman.js gespeichert`);
+}
+
+// --- Tile utilities ---
+function tileAt(px, py) { return [Math.floor(py / TS), Math.floor(px / TS)]; }
+function nextType(t)    { return CYCLE[(CYCLE.indexOf(t) + 1) % CYCLE.length]; }
+
+// --- Undo ---
+function saveMaze() {
+  undoStack.push(maze.map(r => [...r]));
+  if (undoStack.length > 100) undoStack.shift();
+}
+function undo() {
+  if (!undoStack.length) return;
+  const prev = undoStack.pop();
+  for (let r = 0; r < ROWS; r++) maze[r] = prev[r];
+  draw();
+}
+
+// --- Spawn mode ---
+function toggleSpawnMode() {
+  spawnMode = !spawnMode;
+  const btn = document.getElementById('mode-spawn');
+  btn.classList.toggle('active', spawnMode);
+  btn.textContent = spawnMode ? '\ud83c\udfaf Spawn-Modus AKTIV' : '\ud83c\udfaf Spawn setzen';
+  canvas.style.cursor = spawnMode ? 'cell' : 'crosshair';
+  document.getElementById('spawn-info').textContent =
+    spawnMode ? 'Klicke auf ein Tile, um den Pac-Man-Spawn zu setzen.' : '';
+}
+
+// --- Mouse interaction ---
+let painting = false, paintType = null;
+
+canvas.addEventListener('mousedown', e => {
+  e.preventDefault();
+  const [r, c] = tileAt(e.offsetX, e.offsetY);
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+  if (spawnMode) {
+    spawn.x = c + 1; spawn.y = r + 1;
+    document.getElementById('spawn-info').textContent =
+      `\u2713 Spawn gesetzt: game x=${spawn.x}  game y=${spawn.y}  (row=${r}, col=${c})`;
+    draw(); return;
+  }
+  saveMaze();
+  paintType = e.button === 2 ? '.' : nextType(maze[r][c]);
+  maze[r][c] = paintType; painting = true; draw();
+});
+
+canvas.addEventListener('mousemove', e => {
+  const [r, c] = tileAt(e.offsetX, e.offsetY);
+  if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+    infoEl.textContent = `row=${r}  col=${c}  game x=${c+1}  game y=${r+1}  value="${maze[r][c]}"`;
+    if (painting && !spawnMode) { maze[r][c] = paintType; draw(); }
+  }
+});
+
+canvas.addEventListener('mouseup',    () => { painting = false; });
+canvas.addEventListener('mouseleave', () => { painting = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+// --- Output ---
+function updateOutput() {
+  outputEl.value = maze.map((row, i) =>
+    `            "${row.join('')}"${i < ROWS - 1 ? ',' : ''}  // row ${i}  y=${i+1}`
+  ).join('\n');
+}
+
+function updateSpawnOutput() {
+  const x = spawn.x, y = spawn.y;
+  document.getElementById('spawn-output').value =
+    `            // 1P\n` +
+    `            {x: ${x}, y: ${y}, dir: 4},                                    // Pac-Man\n` +
+    `            // 2P\n` +
+    `            {x: ${x + 0.5}, y: ${y}, dir: 8},  // Pac-Man A\n` +
+    `            {x: ${x - 0.5}, y: ${y}, dir: 4},  // Pac-Man B`;
+}
+
+function copyOutput() { copyText(outputEl.value, 'copymsg'); }
+function copySpawn()  { copyText(document.getElementById('spawn-output').value, 'spawn-copymsg'); }
+
+function copyText(text, msgId) {
+  const msg = document.getElementById(msgId);
+  const ok = () => { msg.textContent = '\u2713 Kopiert!'; setTimeout(() => { msg.textContent = ''; }, 2000); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok).catch(() => { legacyCopy(text); ok(); });
+  else { legacyCopy(text); ok(); }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+}
+
+// --- Init ---
+draw();
+tryAutoLoad();
+</script>
+</body>
+</html>

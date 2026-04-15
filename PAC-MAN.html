@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>EATBEER Pac-Man Demo</title>
+  <style>body{margin:35px 0}</style>
+</head>
+<body>
+  <center>
+    <img id="banner" src="eatbeer-bg-final-retro.png" alt="EAT BEER"
+         style="max-width:100%;height:auto;margin-bottom:15px;display:block;">
+
+    <form>
+      <input type="button" value="START DEMO" onclick="startDemo()" 
+             style="font-size:22px;padding:12px 40px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">
+    </form>
+  </center>
+
+  <script>
+    window.google = {
+      time: function () { return (new Date).getTime() },
+      Toolbelt: {},
+      y: {},
+      dstr: [],
+      rein: [],
+      dom: { append: function (a) { return (document.getElementById("xjsc") || document.body).appendChild(a) } }
+    };
+
+    let gameStarted = false;
+
+    function startDemo() {
+      if (gameStarted) return;
+      gameStarted = true;
+
+      console.log("✅ START DEMO geklickt – lade Pac-Man jetzt...");
+
+      loadScript("google-script.js", () => {
+        loadScript("pacman-audio.js", () => {
+          loadScript("pacman.js", () => {
+            setTimeout(() => {
+              if (typeof game !== 'undefined' && typeof game.init === 'function') {
+                game.init();
+                console.log("✅ game.init() manuell ausgeführt");
+              } else {
+                console.error("❌ Pac-Man konnte nicht gestartet werden");
+              }
+            }, 800);
+          });
+        });
+      });
+    }
+
+    function loadScript(src, callback) {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = callback;
+      document.body.appendChild(script);
+    }
+  </script>
+</body>
+</html>
