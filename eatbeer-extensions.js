@@ -7,80 +7,66 @@
 // ── Globale Zustandsvariablen ────────────────────────────────
 window.ebResumeCallback = null;
 
-// ── Inhalte: Energizer-Popups (5 Stück, rotieren zyklisch) ──
+// ── Inhalte: Energizer-Popups (4 Stück, rotieren zyklisch) ──
 var EB_ENERGIZER_POPUPS = {
   de: [
     {
-      title: 'Biertreber trifft Pilzmyzel',
+      title: 'Biertreber als wertvolles Produkt',
       icon: '&#127806;',
-      animFrom: '&#127806; Biertreber',
-      animTo: '&#129344; Protein-Biomasse',
-      text: 'Durch gezielte Fermentation von Biertreber mit Pilzmyzel entstehen hochwertige vegane Proteine und Biomasse. EAT BEER verwandelt diesen Nebenstrom der Brauerei in einen wertvollen Rohstoff für nachhaltige Lebensmittel – statt ihn als Abfall zu entsorgen.'
+      animFrom: '&#127806; BSG',
+      animTo: '&#127859; Zutaten',
+      text: 'Verwandle vorhandenen Biertreber in hochwertige Zutaten wie Proteine und Ballaststoffe für ernährungsphysiologische und funktionelle Anwendungen.'
+    },
+    {
+      title: 'Verpackung aus Biertreber',
+      icon: '&#128230;',
+      animFrom: '&#127806; BSG',
+      animTo: '&#9851; Biobasierte Rohstoffe',
+      text: 'Konvertiere minderwertige Fasern in biobasierte Verbindungen und nachhaltige fossilfreie Anwendungen.'
     },
     {
       title: 'CO\u2082 als Ressource',
       icon: '&#127807;',
       animFrom: '&#128168; Brauerei-CO\u2082',
       animTo: '&#127807; Rohstoff',
-      text: 'Bei der alkoholischen Gärung entstehen große Mengen CO\u2082. Anstatt dieses Treibhausgas in die Atmosphäre abzugeben, kann es gezielt aufgefangen und für Lebensmittel, Getränke oder Algenkultur genutzt werden – ein echter Kreislaufbeitrag.'
+      text: 'Erfasse, verarbeite und verwende CO\u2082 als Rohstoff, anstatt es freizusetzen.'
     },
     {
-      title: 'Bierhefe als Superfood',
+      title: 'Bierhefe als wertvolles Produkt',
       icon: '&#128300;',
-      animFrom: '&#127866; Heferückstand',
-      animTo: '&#128138; N\u00e4hrstoffextrakt',
-      text: 'Bierhefe enthält wertvolle B-Vitamine, Mineralstoffe und alle essenziellen Aminosäuren. EAT BEER erforscht, wie der Hefeüberschuss aus Brauereien zu hochwertigen Nahrungsergänzungsmitteln oder natürlichen Lebensmittelzutaten verarbeitet werden kann.'
-    },
-    {
-      title: 'Verpackungen aus Treber',
-      icon: '&#128230;',
-      animFrom: '&#127806; Treber-Fasern',
-      animTo: '&#9851; Biopackaging',
-      text: 'Die Zellulosefasern im Biertreber eignen sich hervorragend für kompostierbare Verpackungsmaterialien. EAT BEER schließt damit den Kreislauf: vom Getreide über Bier bis zur nachhaltigen Verpackung – ohne fossile Rohstoffe.'
-    },
-    {
-      title: 'Abwärme effizient nutzen',
-      icon: '&#128293;',
-      animFrom: '&#127777; Prozessw\u00e4rme',
-      animTo: '&#9889; Nutzenergie',
-      text: 'Sudanlagen erzeugen erhebliche Abwärme. Durch Wärmerückgewinnung kann diese Energie für Trocknungsprozesse, Pilzkultivierung oder Gebäudeheizung genutzt werden – ein wichtiger Schritt zur Energieautonomie der Brauerei.'
+      animFrom: '&#127866; BSY',
+      animTo: '&#127859; Zutaten',
+      text: 'Verwandle Bierhefe in hochwertige Zutaten reich an Proteinen und funktionellen Verbindungen. Kombiniere sie mit Biertreber-Derivaten für erweiterte Anwendungen.'
     }
   ],
   en: [
     {
-      title: 'Spent Grain Meets Mycelium',
+      title: "Brewer's Spent Grain as a valuable product",
       icon: '&#127806;',
-      animFrom: '&#127806; Spent Grain',
-      animTo: '&#129344; Protein Biomass',
-      text: 'Targeted fermentation of spent grain with mycelium creates high-quality vegan proteins and biomass. EAT BEER transforms this brewery by-product into a valuable raw material for sustainable foods – instead of discarding it as waste.'
+      animFrom: '&#127806; BSG',
+      animTo: '&#127859; Ingredients',
+      text: 'Turn the existent BSG into high-value ingredients as proteins and fibers for nutritional and functional applications.'
+    },
+    {
+      title: 'Packaging from Spent Grain',
+      icon: '&#128230;',
+      animFrom: '&#127806; BSG',
+      animTo: '&#9851; Biobased Raw Materials',
+      text: 'Convert low-value fibers into biobased compounds and sustainable fossil-free applications.'
     },
     {
       title: 'CO\u2082 as a Resource',
       icon: '&#127807;',
       animFrom: '&#128168; Brewery CO\u2082',
       animTo: '&#127807; Raw Material',
-      text: 'Alcoholic fermentation produces large amounts of CO\u2082. Instead of releasing this greenhouse gas into the atmosphere, it can be captured for food, beverages, or algae cultivation – a true circular economy contribution.'
+      text: 'Capture, process and reuse CO\u2082 as a raw material instead of releasing it.'
     },
     {
-      title: 'Brewer\'s Yeast as Superfood',
+      title: "Brewer's Spent Yeast as a valuable product",
       icon: '&#128300;',
-      animFrom: '&#127866; Yeast Residue',
-      animTo: '&#128138; Nutrient Extract',
-      text: 'Brewer\'s yeast contains valuable B vitamins, minerals, and all essential amino acids. EAT BEER is researching how surplus yeast from breweries can become high-quality dietary supplements or natural food ingredients.'
-    },
-    {
-      title: 'Packaging from Spent Grain',
-      icon: '&#128230;',
-      animFrom: '&#127806; Grain Fibers',
-      animTo: '&#9851; Biopackaging',
-      text: 'The cellulose fibers in spent grain are ideal for compostable packaging. EAT BEER closes the loop: from grain to beer to sustainable packaging – without fossil raw materials.'
-    },
-    {
-      title: 'Utilizing Waste Heat',
-      icon: '&#128293;',
-      animFrom: '&#127777; Process Heat',
-      animTo: '&#9889; Usable Energy',
-      text: 'Brewing systems generate significant waste heat. Through heat recovery, this energy can be used for drying, mushroom cultivation, or building heating – a key step toward energy autonomy.'
+      animFrom: '&#127866; BSY',
+      animTo: '&#127859; Ingredients',
+      text: 'Turn BSY into high-value ingredients rich in proteins and functional compounds. Combine with BSG derivatives for enhanced applications.'
     }
   ]
 };
@@ -90,61 +76,69 @@ var EB_ENERGIZER_POPUPS = {
 var EB_GHOST_POPUPS = {
   de: [
     {
-      name: 'KONKURRENZ',
-      icon: '&#9876;',
-      title: 'Wachsender Wettbewerb',
-      text: 'Der Bier Markt wächst rasant. Neue Mikrobrauereien und Getränke-Startups drängen mit innovativen Konzepten in den Markt. Nur Betriebe mit klarer Differenzierung und nachhaltigen Alleinstellungsmerkmalen können sich langfristig behaupten.',
+      name: 'ROHSTOFFVERLUST',
+      icon: '&#127806;',
+      challenge: 'Jedes verlorene 1\u202f% schmälert die Marge\u2026',
+      title: 'Rohstoffverlust',
+      text: 'Wertvolle Extrakte und Feststoffe gehen im gesamten Brauprozess verloren \u2013 vom Läutern bis zur Separation. Diese kleinen Verluste summieren sich schnell und erhöhen die Rohstoffkosten pro Hektoliter.',
       color: '#e74c3c'
     },
     {
-      name: 'ENERGIEKOSTEN',
+      name: 'STEIGENDER ENERGIEVERBRAUCH',
       icon: '&#9889;',
-      title: 'Steigende Energiepreise',
-      text: 'Brauereien gehören zu den energieintensivsten Lebensmittelbetrieben. Explodierende Strom- und Gaskosten belasten die Margen erheblich. Wer frühzeitig in Energieeffizienz und erneuerbare Quellen investiert, sichert seine Wettbewerbsfähigkeit.',
+      challenge: 'Trifft deinen Gewinn\u2026',
+      title: 'Steigender Energieverbrauch',
+      text: 'Brauereien verbrauchen große Mengen thermischer und elektrischer Energie. Ineffizienzen beim Heizen, Trocknen und Kühlen erhöhen unnötig die Energiekosten und senken die Margen.',
       color: '#f39c12'
     },
     {
-      name: 'ROHSTOFFMANGEL',
-      icon: '&#127806;',
-      title: 'Rohstoffknappheit',
-      text: 'Der Klimawandel bedroht Gersten- und Hopfenernten in Europa. Extremwetterereignisse, Dürreperioden und neue Schädlinge lassen Erträge einbrechen. Brauereien müssen Lieferketten diversifizieren und Nebenströme als Hauptstom neudenken.',
+      name: 'BETRIEBLICHE EFFIZIENZ',
+      icon: '&#9881;',
+      challenge: 'Begrenzt deine Kapazität\u2026',
+      title: 'Betriebliche Effizienz',
+      text: 'Prozesse laufen unter optimaler Leistung \u2013 verbrauchen mehr Zeit, Wasser und Kapazität als nötig. Dies führt zu Engpässen und erhöht die Betriebskosten.',
       color: '#27ae60'
     },
     {
-      name: 'REGULIERUNG',
-      icon: '&#128203;',
-      title: 'Regulatorischer Druck',
-      text: 'Strengere Lebensmittelgesetze, CO\u2082-Bepreisung und wachsende Nachhaltigkeits-Berichtspflichten erhöhen den Compliance-Aufwand. Brauereien müssen frühzeitig in Prozessanpassungen investieren, um regulatorischen Anforderungen gewachsen zu sein.',
+      name: 'VERLORENER WERT',
+      icon: '&#128200;',
+      challenge: 'Was du Abfall nennst, könnte Umsatz sein.',
+      title: 'Verlorener Wert',
+      text: 'Nebenprodukte wie Biertreber und Bierhefe werden oft zu einem niedrigen Wert verkauft oder nicht vollständig genutzt. Das führt zu verpassten Chancen, zusätzliche Umsatzströme zu erschließen.',
       color: '#8e44ad'
     }
   ],
   en: [
     {
-      name: 'COMPETITION',
-      icon: '&#9876;',
-      title: 'Growing Competition',
-      text: 'The beer market is growing rapidly. New microbreweries and beverage startups are entering with innovative concepts. Only businesses with clear differentiation and sustainable unique selling points can establish themselves long-term.',
+      name: 'RAW MATERIAL LOSS',
+      icon: '&#127806;',
+      challenge: 'Every 1\u202f% LOST is margin gone\u2026',
+      title: 'Raw Material Loss',
+      text: 'Valuable extract and solids are lost across the brewing process \u2014 from lautering to separation. These small losses add up fast and increase raw material cost per hectoliter.',
       color: '#e74c3c'
     },
     {
-      name: 'ENERGY COSTS',
+      name: 'RISING ENERGY CONSUMPTION',
       icon: '&#9889;',
-      title: 'Rising Energy Prices',
-      text: 'Breweries are among the most energy-intensive food businesses. Exploding electricity and gas costs significantly impact margins. Those who invest early in energy efficiency and renewable sources secure their competitiveness.',
+      challenge: 'Hits your bottom line\u2026',
+      title: 'Rising Energy Consumption',
+      text: 'Breweries consume large amounts of thermal and electrical energy. Inefficiencies in heating, drying, and cooling unnecessarily increase energy costs and reduce margins.',
       color: '#f39c12'
     },
     {
-      name: 'RAW MATERIALS',
-      icon: '&#127806;',
-      title: 'Raw Material Scarcity',
-      text: 'Climate change threatens barley and hop harvests in Europe. Extreme weather events, droughts, and new pests are causing crop failures. Breweries must diversify supply chains and rethink by-products as primary streams.',
+      name: 'OPERATIONAL EFFICIENCY',
+      icon: '&#9881;',
+      challenge: 'Limits your capacity\u2026',
+      title: 'Operational Efficiency',
+      text: 'Processes run below optimal performance \u2014 using more time, water, and capacity than needed. This creates bottlenecks and increases operational cost.',
       color: '#27ae60'
     },
     {
-      name: 'REGULATION',
-      icon: '&#128203;',
-      title: 'Regulatory Pressure',
-      text: 'Stricter food laws, CO\u2082 pricing, and growing sustainability reporting requirements increase compliance burdens. Breweries must invest early in process adaptations to meet regulatory requirements.',
+      name: 'LOST VALUE',
+      icon: '&#128200;',
+      challenge: 'What you call WASTE could be REVENUE.',
+      title: 'Lost Value',
+      text: 'By-products like BSG and BSY are often sold at low value or not fully utilized. This results in missed opportunities to unlock additional revenue streams.',
       color: '#8e44ad'
     }
   ]
@@ -176,9 +170,12 @@ window.ebHookPlayerDied = function (ghostId, resumeFn) {
 
   document.getElementById('eb-popup-icon').innerHTML  = data.icon;
   document.getElementById('eb-popup-title').innerHTML =
-    '<span style="color:' + data.color + '">' + data.name + '</span>: ' + data.title;
+    '<span style="color:' + data.color + '">' + data.name + '</span>';
   document.getElementById('eb-popup-text').textContent  = data.text;
-  document.getElementById('eb-popup-animation').innerHTML = '';
+  document.getElementById('eb-popup-animation').innerHTML =
+    '<span style="display:inline-block;background:rgba(232,150,15,0.15);border:1px solid #e8960f;' +
+    'border-radius:6px;padding:5px 14px;color:#e8960f;font-size:13px;font-style:italic;">' +
+    data.challenge + '</span>';
 
   document.getElementById('eb-overlay').classList.add('active');
 };
