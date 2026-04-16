@@ -94,7 +94,7 @@ var EB_GHOST_POPUPS = {
     {
       name: 'PROZESSVERLUSTE',
       icon: '&#128465;',
-      challenge: 'Begrenzt deine Kapazität\u2026',
+      challenge: 'Begrenzen deine Kapazität\u2026',
       title: 'Prozessverluste',
       text: 'Überschüssiges Wasser, Wärme und Rohstoffe gehen im gesamten Brauprozess verloren \u2013 vom Maischen bis zur Abfüllung. Diese Verluste senken die Ausbeute und erhöhen die Kosten pro Charge.',
       color: '#27ae60'

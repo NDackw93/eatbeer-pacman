@@ -26,7 +26,7 @@
     @keyframes ebFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     #eb-popup {
-      background: #111;
+      background: #1a1a1a;
       border: 2px solid #e8960f;
       border-radius: 14px;
       padding: 32px 36px;
@@ -158,17 +158,22 @@
     }
     #eb-lang-quote-text strong { color: #fff; font-style: normal; }
     #eb-lang-logo {
-      display: inline-flex; align-items: center; gap: 8px;
-      color: #e8960f; font-size: 0.78em; font-weight: bold;
-      letter-spacing: 1px; text-transform: uppercase;
+      display: flex; justify-content: center;
     }
-    #eb-lang-logo-icon {
-      font-size: 1.4em; line-height: 1;
+    #eb-lang-logo img { height: 72px; width: auto; opacity: 0.92; }
+
+    /* ── Popup Logo ──────────────────────────────────────────── */
+    #eb-popup { position: relative; }
+    #eb-popup-logo {
+      position: absolute; top: 10px; left: 12px;
+      height: 96px; width: auto; opacity: 0.9;
     }
-    #eb-lang-logo-text { line-height: 1.2; text-align: left; }
-    #eb-lang-logo-sub {
-      display: block; font-size: 0.75em;
-      color: #aaa; font-weight: normal; letter-spacing: 2px;
+
+    /* ── Corner Logo (Startscreen) ───────────────────────────── */
+    #eb-corner-logo {
+      position: absolute; bottom: 18px; right: 22px;
+      height: 80px; width: auto; opacity: 0.92;
+      pointer-events: none;
     }
   </style>
 
@@ -231,6 +236,8 @@
     <!-- START DEMO Button – absolut positioniert zwischen EAT BEER und Pacman -->
     <input id="eb-start-btn" name="btnI" type="button" value="▶  START"
            onclick="ebStartGame()">
+    <!-- Corner Logo – unten rechts im Startscreen -->
+    <img id="eb-corner-logo" src="eatbeer_logo.png" alt="EAT BEER Biotech">
   </div>
 
   <!-- ── Sprachauswahl-Overlay ────────────────────────────── -->
@@ -249,8 +256,7 @@
     <div id="eb-lang-quote">
       <span id="eb-lang-quote-text">"Every brewery has <strong>hidden losses</strong>. Find them. Turn them into value."</span>
       <div id="eb-lang-logo">
-        <span id="eb-lang-logo-icon">🍺</span>
-        <span id="eb-lang-logo-text">EAT BEER<span id="eb-lang-logo-sub">BIOTECH</span></span>
+        <img src="eatbeer_logo.png" alt="EAT BEER Biotech">
       </div>
     </div>
   </div>
@@ -258,6 +264,7 @@
   <!-- ── Popup-Overlay ──────────────────────────────────────── -->
   <div id="eb-overlay">
     <div id="eb-popup">
+      <img id="eb-popup-logo" src="eatbeer_logo.png" alt="EAT BEER Biotech">
       <div id="eb-popup-icon"></div>
       <h2 id="eb-popup-title"></h2>
       <div id="eb-popup-animation"></div>

@@ -1034,7 +1034,7 @@ function () {
     };
     Actor.prototype.handleIntersection = function () {
         this.handleTunnelAndSpecialTiles();
-        this.ghost && this.decideNextDirection(this.mode == 8 ? TRUE : FALSE);
+        this.ghost && this.decideNextDirection(TRUE);
         var b = game.playfield[this.pos[0]][this.pos[1]];
         if (b.intersection) if (this.nextDir && this.nextDir & b.allowedDir) {
             if (this.dir != 0) this.lastActiveDir = this.dir;
@@ -2134,9 +2134,13 @@ function () {
             }
             if (killerGhostId >= 0) {
                 window.clearInterval(game.tickTimer);
+                if (game.soundAvailable) {
+                    try { game.flashSoundPlayer.stopAmbientTrack(); } catch(e) {}
+                }
                 var playerB = b;
                 window.ebHookPlayerDied(killerGhostId, function () {
                     game.tickTimer = window.setInterval(game.tick, game.tickInterval);
+                    game.playAmbientSound();
                     game.playerDyingId = playerB;
                     game.changeGameplayMode(2);
                 });
