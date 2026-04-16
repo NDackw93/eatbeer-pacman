@@ -112,9 +112,17 @@
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
       z-index: 10000;
+      flex-direction: column;
       align-items: center; justify-content: center;
+      gap: 28px;
     }
     #eb-lang-overlay.active { display: flex; }
+    #eb-lang-disclaimer {
+      color: #ccc; font-size: 0.88em; font-style: italic;
+      text-align: center; max-width: 420px;
+      transition: opacity 0.2s;
+    }
+    #eb-lang-disclaimer strong { font-style: normal; color: #fff; }
     #eb-lang-box {
       background: #1a1a1a;
       border: 2px solid #e8960f;
@@ -139,6 +147,29 @@
       transition: background 0.2s, color 0.2s;
     }
     .eb-lang-btn:hover { background: #e8960f; color: #000; }
+    #eb-lang-quote {
+      text-align: center; max-width: 380px;
+      transition: opacity 0.2s;
+    }
+    #eb-lang-quote-text {
+      display: block;
+      color: #ccc; font-size: 0.92em; font-style: italic; line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    #eb-lang-quote-text strong { color: #fff; font-style: normal; }
+    #eb-lang-logo {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: #e8960f; font-size: 0.78em; font-weight: bold;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    #eb-lang-logo-icon {
+      font-size: 1.4em; line-height: 1;
+    }
+    #eb-lang-logo-text { line-height: 1.2; text-align: left; }
+    #eb-lang-logo-sub {
+      display: block; font-size: 0.75em;
+      color: #aaa; font-weight: normal; letter-spacing: 2px;
+    }
   </style>
 
   <script>
@@ -204,12 +235,22 @@
 
   <!-- ── Sprachauswahl-Overlay ────────────────────────────── -->
   <div id="eb-lang-overlay" class="active">
+    <div id="eb-lang-disclaimer">
+      <strong>Disclaimer:</strong> <span id="eb-disclaimer-text">This game shows how breweries can move beyond survival mode.</span>
+    </div>
     <div id="eb-lang-box">
       <div id="eb-lang-title">🍺 EAT BEER Pac-Man</div>
       <div id="eb-lang-subtitle">Bitte wähle deine Sprache<br>Please select your language</div>
       <div id="eb-lang-buttons">
-        <button class="eb-lang-btn" onclick="ebSelectLanguage('de')">🇩🇪 Deutsch</button>
+        <button class="eb-lang-btn" id="eb-btn-de" onclick="ebSelectLanguage('de')">🇩🇪 Deutsch</button>
         <button class="eb-lang-btn" onclick="ebSelectLanguage('en')">🇬🇧 English</button>
+      </div>
+    </div>
+    <div id="eb-lang-quote">
+      <span id="eb-lang-quote-text">"Every brewery has <strong>hidden losses</strong>. Find them. Turn them into value."</span>
+      <div id="eb-lang-logo">
+        <span id="eb-lang-logo-icon">🍺</span>
+        <span id="eb-lang-logo-text">EAT BEER<span id="eb-lang-logo-sub">BIOTECH</span></span>
       </div>
     </div>
   </div>
@@ -243,6 +284,28 @@
       var btn = document.getElementById('eb-popup-btn');
       btn.innerHTML = lang === 'de' ? 'Weiter &#8594;' : 'Continue &#8594;';
     }
+
+    var EB_LANG_TEXTS = {
+      en: {
+        disclaimer: 'This game shows how breweries can move beyond survival mode.',
+        quote: '"Every brewery has <strong>hidden losses</strong>. Find them. Turn them into value."'
+      },
+      de: {
+        disclaimer: 'Dieses Spiel zeigt, wie Brauereien über den Überlebensmodus hinauswachsen können.',
+        quote: '„Jede Brauerei hat <strong>verborgene Verluste</strong>. Finde sie. Mach sie zu Wert."'
+      }
+    };
+
+    function ebSetLangTexts(lang) {
+      document.getElementById('eb-disclaimer-text').innerHTML = EB_LANG_TEXTS[lang].disclaimer;
+      document.getElementById('eb-lang-quote-text').innerHTML = EB_LANG_TEXTS[lang].quote;
+    }
+
+    (function () {
+      var btnDe = document.getElementById('eb-btn-de');
+      btnDe.addEventListener('mouseenter', function () { ebSetLangTexts('de'); });
+      btnDe.addEventListener('mouseleave', function () { ebSetLangTexts('en'); });
+    })();
 
     function ebClosePopup() {
       document.getElementById('eb-overlay').classList.remove('active');
