@@ -14,13 +14,13 @@ var EB_ENERGIZER_POPUPS = {
       title: 'Biertreber als wertvolles Produkt',
       icon: '&#127806;',
       animFrom: '&#127806; BSG',
-      animTo: '&#127859; Zutaten',
+      animTo: '&#129514; Zutaten',
       text: 'Verwandle vorhandenen Biertreber in hochwertige Zutaten wie Proteine und Ballaststoffe für ernährungsphysiologische und funktionelle Anwendungen.'
     },
     {
       title: 'Verpackung aus Biertreber',
       icon: '&#128230;',
-      animFrom: '&#127806; BSG',
+      animFrom: '&#127806; Biertreber',
       animTo: '&#9851; Biobasierte Rohstoffe',
       text: 'Konvertiere minderwertige Fasern in biobasierte Verbindungen und nachhaltige fossilfreie Anwendungen.'
     },
@@ -34,8 +34,8 @@ var EB_ENERGIZER_POPUPS = {
     {
       title: 'Bierhefe als wertvolles Produkt',
       icon: '&#128300;',
-      animFrom: '&#127866; BSY',
-      animTo: '&#127859; Zutaten',
+      animFrom: '&#127866; Bierhefe',
+      animTo: '&#129514; Zutaten',
       text: 'Verwandle Bierhefe in hochwertige Zutaten reich an Proteinen und funktionellen Verbindungen. Kombiniere sie mit Biertreber-Derivaten für erweiterte Anwendungen.'
     }
   ],
@@ -44,7 +44,7 @@ var EB_ENERGIZER_POPUPS = {
       title: "Brewer's Spent Grain as a valuable product",
       icon: '&#127806;',
       animFrom: '&#127806; BSG',
-      animTo: '&#127859; Ingredients',
+      animTo: '&#129514; Ingredients',
       text: 'Turn the existent BSG into high-value ingredients as proteins and fibers for nutritional and functional applications.'
     },
     {
@@ -65,7 +65,7 @@ var EB_ENERGIZER_POPUPS = {
       title: "Brewer's Spent Yeast as a valuable product",
       icon: '&#128300;',
       animFrom: '&#127866; BSY',
-      animTo: '&#127859; Ingredients',
+      animTo: '&#129514; Ingredients',
       text: 'Turn BSY into high-value ingredients rich in proteins and functional compounds. Combine with BSG derivatives for enhanced applications.'
     }
   ]
@@ -84,24 +84,24 @@ var EB_GHOST_POPUPS = {
       color: '#e74c3c'
     },
     {
-      name: 'STEIGENDER ENERGIEVERBRAUCH',
+      name: 'ENERGIEVERSCHWENDUNG',
       icon: '&#9889;',
       challenge: 'Trifft deinen Gewinn\u2026',
-      title: 'Steigender Energieverbrauch',
+      title: 'Energieverschwendung',
       text: 'Brauereien verbrauchen große Mengen thermischer und elektrischer Energie. Ineffizienzen beim Heizen, Trocknen und Kühlen erhöhen unnötig die Energiekosten und senken die Margen.',
       color: '#f39c12'
     },
     {
-      name: 'BETRIEBLICHE EFFIZIENZ',
-      icon: '&#9881;',
+      name: 'PROZESSVERLUSTE',
+      icon: '&#128465;',
       challenge: 'Begrenzt deine Kapazität\u2026',
-      title: 'Betriebliche Effizienz',
-      text: 'Prozesse laufen unter optimaler Leistung \u2013 verbrauchen mehr Zeit, Wasser und Kapazität als nötig. Dies führt zu Engpässen und erhöht die Betriebskosten.',
+      title: 'Prozessverluste',
+      text: 'Überschüssiges Wasser, Wärme und Rohstoffe gehen im gesamten Brauprozess verloren \u2013 vom Maischen bis zur Abfüllung. Diese Verluste senken die Ausbeute und erhöhen die Kosten pro Charge.',
       color: '#27ae60'
     },
     {
       name: 'VERLORENER WERT',
-      icon: '&#128200;',
+      icon: '&#128201;',
       challenge: 'Was du Abfall nennst, könnte Umsatz sein.',
       title: 'Verlorener Wert',
       text: 'Nebenprodukte wie Biertreber und Bierhefe werden oft zu einem niedrigen Wert verkauft oder nicht vollständig genutzt. Das führt zu verpassten Chancen, zusätzliche Umsatzströme zu erschließen.',
@@ -118,24 +118,24 @@ var EB_GHOST_POPUPS = {
       color: '#e74c3c'
     },
     {
-      name: 'RISING ENERGY CONSUMPTION',
+      name: 'ENERGY BURN',
       icon: '&#9889;',
       challenge: 'Hits your bottom line\u2026',
-      title: 'Rising Energy Consumption',
+      title: 'Energy Burn',
       text: 'Breweries consume large amounts of thermal and electrical energy. Inefficiencies in heating, drying, and cooling unnecessarily increase energy costs and reduce margins.',
       color: '#f39c12'
     },
     {
-      name: 'OPERATIONAL EFFICIENCY',
-      icon: '&#9881;',
+      name: 'PROCESS WASTE',
+      icon: '&#128465;',
       challenge: 'Limits your capacity\u2026',
-      title: 'Operational Efficiency',
-      text: 'Processes run below optimal performance \u2014 using more time, water, and capacity than needed. This creates bottlenecks and increases operational cost.',
+      title: 'Process Waste',
+      text: 'Excess water, heat, and raw materials are wasted throughout the brewing process \u2014 from mashing to packaging. These losses reduce output and increase cost per batch.',
       color: '#27ae60'
     },
     {
       name: 'LOST VALUE',
-      icon: '&#128200;',
+      icon: '&#128201;',
       challenge: 'What you call WASTE could be REVENUE.',
       title: 'Lost Value',
       text: 'By-products like BSG and BSY are often sold at low value or not fully utilized. This results in missed opportunities to unlock additional revenue streams.',
