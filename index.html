@@ -130,6 +130,11 @@
       padding: 40px 48px;
       text-align: center;
       animation: ebFadeIn 0.3s ease, ebSlideIn 0.32s cubic-bezier(.22,.68,0,1.2);
+      position: relative;
+    }
+    #eb-lang-box-logo {
+      position: absolute; top: 10px; left: 12px;
+      height: 96px; width: auto; opacity: 0.9;
     }
     #eb-lang-title {
       font-size: 1.6em; font-weight: bold;
@@ -246,7 +251,8 @@
       <strong>Disclaimer:</strong> <span id="eb-disclaimer-text">This game shows how breweries can move beyond survival mode.</span>
     </div>
     <div id="eb-lang-box">
-      <div id="eb-lang-title">🍺 EAT BEER Pac-Man</div>
+      <img id="eb-lang-box-logo" src="eatbeer_logo.png" alt="EAT BEER Biotech">
+      <div id="eb-lang-title">Pac-Man</div>
       <div id="eb-lang-subtitle">Bitte wähle deine Sprache<br>Please select your language</div>
       <div id="eb-lang-buttons">
         <button class="eb-lang-btn" id="eb-btn-de" onclick="ebSelectLanguage('de')">🇩🇪 Deutsch</button>
@@ -255,9 +261,6 @@
     </div>
     <div id="eb-lang-quote">
       <span id="eb-lang-quote-text">"Every brewery has <strong>hidden losses</strong>. Find them. Turn them into value."</span>
-      <div id="eb-lang-logo">
-        <img src="eatbeer_logo.png" alt="EAT BEER Biotech">
-      </div>
     </div>
   </div>
 
