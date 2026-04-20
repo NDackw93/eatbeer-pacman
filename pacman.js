@@ -1669,7 +1669,7 @@ function () {
         }
     };
     game.createEnergizerElements = function () {
-        var ebIcons = ['\uD83C\uDF44', '\uD83D\uDCA8', '\uD83D\uDD2C', '\u267B\uFE0F', '\uD83D\uDD25'];
+        var ebIcons = ['\uD83C\uDF3E', '\uD83D\uDCE6', '\uD83C\uDF3F', '\uD83D\uDD2C'];
         for (var b in ENERGIZER_POSITIONS) {
             var c = ENERGIZER_POSITIONS[b],
                 d = game.getDotElementId(c.y * 8, c.x * 8);
@@ -2216,7 +2216,7 @@ function () {
             b = document.createElement("div");
             b.id = "pcm-re";
             game.prepareElement(b, 160, 0);
-            game.playfieldEl.appendChild(b);
+            game.canvasEl.appendChild(b);
             game.gameplayModeTime = game.timing[6];
             break;
         case 4:
@@ -2224,7 +2224,7 @@ function () {
             b = document.createElement("div");
             b.id = "pcm-re";
             game.prepareElement(b, 160, 0);
-            game.playfieldEl.appendChild(b);
+            game.canvasEl.appendChild(b);
             game.gameplayModeTime = game.timing[7];
             game.stopAllAudio();
             game.playerCount == 2 ? game.playSound("start-music-double", 0, TRUE) : game.playSound("start-music", 0, TRUE);
@@ -2242,7 +2242,7 @@ function () {
             b = document.createElement("div");
             b.id = "pcm-go";
             game.prepareElement(b, 8, 152);
-            game.playfieldEl.appendChild(b);
+            game.canvasEl.appendChild(b);
             game.gameplayModeTime = game.timing[9];
             break;
         case 9:
@@ -2479,6 +2479,7 @@ function () {
                 case 8:
                     b = document.getElementById("pcm-go");
                     google.dom.remove(b);
+                    window.clearInterval(game.tickTimer);
                     google.pacManQuery && google.pacManQuery();
                     break;
                 case 9:
@@ -2810,7 +2811,7 @@ function () {
         }
     };
     game.addCss = function () {
-        var b = "#pcm-c {  width: 554px;  border-top: 25px solid black;  padding-bottom: 25px;  height: 136px;  position: relative;  background: black;  outline: 0;  overflow: hidden;  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);}#pcm-c * {  position: absolute;  overflow: hidden;}#pcm-p,#pcm-cc {  left: 45px;  width: 464px;  height: 136px;  z-index: 99;  overflow: hidden;}#pcm-p .pcm-d {  width: 10px;  height: 10px;  margin-left: -1px;  margin-top: -1px;  background: transparent;  z-index: 100;  font-size: 8px;  line-height: 10px;  text-align: center;  overflow: hidden;}#pcm-p .pcm-e {  width: 14px;  height: 14px;  margin-left: -3px;  margin-top: -3px;  z-index: 101;  font-size: 12px;  line-height: 14px;  text-align: center;  overflow: hidden;  background: transparent;}#pcm-sc-1 {  left: 18px;  top: 16px;  width: 8px;  height: 56px;  position: absolute;  overflow: hidden;}#pcm-sc-2 {  left: 18px;  top: 80px;  width: 8px;  height: 56px;  position: absolute;  overflow: hidden;}#pcm-le {  position: absolute;  left: 515px;  top: 74px;  height: 64px;  width: 32px;} #pcm-le div {  position: relative;}#pcm-sc-1-l {    left: -2px;  top: 0;  width: 48px;  height: 8px;}#pcm-sc-2-l {    left: -2px;  top: 64px;  width: 48px;  height: 8px;}#pcm-so {  left: 7px;  top: 116px;  width: 12px;  height: 12px;  border: 8px solid black;  cursor: pointer;}#pcm-li {  position: absolute;  left: 523px;  top: 0;  height: 80px;  width: 16px;}#pcm-li .pcm-lif {  position: relative;  width: 16px;  height: 12px;  margin-bottom: 3px;}#pcm-p.blk .pcm-e {  visibility: hidden;}#pcm-c .pcm-ac {  width: 16px;  height: 16px;  margin-left: -4px;  margin-top: -4px;  z-index: 110;}#pcm-c .pcm-n {  z-index: 111;}#pcm-c #pcm-stck {  z-index: 109;}#pcm-c #pcm-gbug {  width: 32px;}#pcm-c #pcm-bpcm {  width: 32px;  height: 32px;  margin-left: -20px;  margin-top: -20px;}#pcm-f,#pcm-le div {  width: 32px;  height: 16px;  z-index: 105;}#pcm-f {  margin-left: -8px;  margin-top: -4px;}#pcm-do {  width: 16px;  height: 2px;  left: 188px;  top: 22px;  overflow: hidden;  position: absolute;  background: #ffaaa5;}#pcm-re {  width: 48px;  height: 8px;  z-index: 120;  left: 264px;  top: 80px;}#pcm-go {  width: 80px;  height: 8px;  z-index: 120;  left: 248px;  top: 80px;}#pcm-p::before {  content: 'EAT BEER';  position: absolute;  font-size: 52px;  font-weight: 900;  color: rgba(220, 140, 20, 0.13);  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  z-index: 1;  pointer-events: none;  font-family: Impact, Arial Black, sans-serif;  letter-spacing: 6px;  white-space: nowrap;  overflow: visible;}";
+        var b = "#pcm-c {  width: 554px;  border-top: 25px solid black;  padding-bottom: 25px;  height: 136px;  position: relative;  background: black;  outline: 0;  overflow: hidden;  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);}#pcm-c * {  position: absolute;  overflow: hidden;}#pcm-p,#pcm-cc {  left: 45px;  width: 464px;  height: 136px;  z-index: 99;  overflow: hidden;}#pcm-p .pcm-d {  width: 10px;  height: 10px;  margin-left: -1px;  margin-top: -1px;  background: transparent;  z-index: 100;  font-size: 8px;  line-height: 10px;  text-align: center;  overflow: hidden;}#pcm-p .pcm-e {  width: 14px;  height: 14px;  margin-left: -3px;  margin-top: -3px;  z-index: 101;  font-size: 12px;  line-height: 14px;  text-align: center;  overflow: hidden;  background: transparent;}#pcm-sc-1 {  left: 18px;  top: 16px;  width: 8px;  height: 56px;  position: absolute;  overflow: hidden;}#pcm-sc-2 {  left: 18px;  top: 80px;  width: 8px;  height: 56px;  position: absolute;  overflow: hidden;}#pcm-le {  position: absolute;  left: 515px;  top: 74px;  height: 64px;  width: 32px;} #pcm-le div {  position: relative;}#pcm-sc-1-l {    left: -2px;  top: 0;  width: 48px;  height: 8px;}#pcm-sc-2-l {    left: -2px;  top: 64px;  width: 48px;  height: 8px;}#pcm-so {  left: 7px;  top: 116px;  width: 12px;  height: 12px;  border: 8px solid black;  cursor: pointer;}#pcm-li {  position: absolute;  left: 523px;  top: 0;  height: 80px;  width: 16px;}#pcm-li .pcm-lif {  position: relative;  width: 16px;  height: 12px;  margin-bottom: 3px;}#pcm-p.blk .pcm-e {  visibility: hidden;}#pcm-c .pcm-ac {  width: 16px;  height: 16px;  margin-left: -4px;  margin-top: -4px;  z-index: 110;}#pcm-c .pcm-n {  z-index: 111;}#pcm-c #pcm-stck {  z-index: 109;}#pcm-c #pcm-gbug {  width: 32px;}#pcm-c #pcm-bpcm {  width: 32px;  height: 32px;  margin-left: -20px;  margin-top: -20px;}#pcm-f,#pcm-le div {  width: 32px;  height: 16px;  z-index: 105;}#pcm-f {  margin-left: -8px;  margin-top: -4px;}#pcm-do {  width: 16px;  height: 2px;  left: 188px;  top: 22px;  overflow: hidden;  position: absolute;  background: #ffaaa5;}#pcm-re {  width: 48px;  height: 8px;  z-index: 120;  left: 253px;  top: 144px;}#pcm-go {  width: 80px;  height: 8px;  z-index: 120;  left: 237px;  top: 144px;}#pcm-p::before {  content: 'EAT BEER';  position: absolute;  font-size: 52px;  font-weight: 900;  color: rgba(220, 140, 20, 0.13);  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  z-index: 1;  pointer-events: none;  font-family: Impact, Arial Black, sans-serif;  letter-spacing: 6px;  white-space: nowrap;  overflow: visible;}";
         game.styleElement =
         document.createElement("style");
         game.styleElement.type = "text/css";

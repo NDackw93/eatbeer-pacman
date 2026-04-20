@@ -162,6 +162,42 @@ window.ebHookEnergizerEaten = function (energizerIdx, resumeFn) {
   document.getElementById('eb-overlay').classList.add('active');
 };
 
+// ── Inhalte: Game-Over-Popup ─────────────────────────────────
+var EB_GAMEOVER_POPUP = {
+  de: {
+    icon: '&#128128;',
+    title: 'Game Over!',
+    text: 'Keine Sorge! Wir sind hier um zu helfen! Kontaktiere uns: support@eatbeer.com',
+    btn: 'Neustart &#8594;'
+  },
+  en: {
+    icon: '&#128128;',
+    title: 'Game Over!',
+    text: "Game over? Don't worry! We are here to help! Contact us: support@eatbeer.com",
+    btn: 'Restart &#8594;'
+  }
+};
+
+// ── Game Over Hook ────────────────────────────────────────────
+google.pacManQuery = function () {
+  var lang = window.ebLanguage || 'de';
+  var data = EB_GAMEOVER_POPUP[lang];
+
+  document.getElementById('eb-popup-icon').innerHTML   = data.icon;
+  document.getElementById('eb-popup-title').textContent = data.title;
+  document.getElementById('eb-popup-text').textContent  = data.text;
+  document.getElementById('eb-popup-animation').innerHTML = '';
+  document.getElementById('eb-popup-btn').innerHTML = data.btn;
+
+  window.ebResumeCallback = function () {
+    var l = window.ebLanguage || 'de';
+    document.getElementById('eb-popup-btn').innerHTML = l === 'de' ? 'Weiter &#8594;' : 'Continue &#8594;';
+    google.pacman.insertCoin();
+  };
+
+  document.getElementById('eb-overlay').classList.add('active');
+};
+
 // ── Popup anzeigen: Ghost tötet Spieler ─────────────────────
 window.ebHookPlayerDied = function (ghostId, resumeFn) {
   var lang = window.ebLanguage || 'de';
