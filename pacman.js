@@ -984,7 +984,7 @@ function () {
             this.reverseDirectionsNext = FALSE;
             this.decideNextDirection(TRUE)
         }
-        if (!this.ghost && !game.playfield[b[0]][b[1]].path) {
+        if (!this.ghost && (!game.playfield[b[0]][b[1]].path || game.playfield[b[0]][b[1]].ghostHouse)) {
             this.pos[0] = this.lastGoodTilePos[0];
             this.pos[1] = this.lastGoodTilePos[1];
             b[0] = this.lastGoodTilePos[0];

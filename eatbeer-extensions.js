@@ -13,7 +13,7 @@ var EB_ENERGIZER_POPUPS = {
     {
       title: 'Biertreber als wertvolles Produkt',
       icon: '&#127806;',
-      animFrom: '&#127806; BSG',
+      animFrom: '&#127806; Biertreber',
       animTo: '&#129514; Zutaten',
       text: 'Verwandle vorhandenen Biertreber in hochwertige Zutaten wie Proteine und Ballaststoffe für ernährungsphysiologische und funktionelle Anwendungen.'
     },
