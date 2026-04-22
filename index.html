@@ -180,53 +180,6 @@
       height: 80px; width: auto; opacity: 0.92;
       pointer-events: none;
     }
-
-    /* ── On-Screen D-Pad (Tablet) ────────────────────────────── */
-    #eb-dpad {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 200;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    @media (pointer: coarse) {
-      #eb-dpad { display: flex; }
-    }
-    .eb-dpad-row {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .eb-dpad-btn {
-      width: clamp(56px, 11vw, 88px);
-      height: clamp(56px, 11vw, 88px);
-      background: rgba(232, 150, 15, 0.12);
-      border: 2px solid rgba(232, 150, 15, 0.55);
-      border-radius: 12px;
-      color: #e8960f;
-      font-size: clamp(18px, 4vw, 30px);
-      touch-action: none;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.08s;
-    }
-    .eb-dpad-btn:active {
-      background: rgba(232, 150, 15, 0.38);
-      border-color: #e8960f;
-    }
-    .eb-dpad-center {
-      width: clamp(56px, 11vw, 88px);
-      height: clamp(56px, 11vw, 88px);
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 50%;
-    }
   </style>
 
   <script>
@@ -290,16 +243,6 @@
            onclick="ebStartGame()">
     <!-- Corner Logo – unten rechts im Startscreen -->
     <img id="eb-corner-logo" src="eatbeer_logo.png" alt="EAT BEER Biotech">
-    <!-- D-Pad – Tablet-Steuerung, unterhalb Spielfeld -->
-    <div id="eb-dpad">
-      <button class="eb-dpad-btn" id="eb-dpad-up">▲</button>
-      <div class="eb-dpad-row">
-        <button class="eb-dpad-btn" id="eb-dpad-left">◀</button>
-        <div class="eb-dpad-center"></div>
-        <button class="eb-dpad-btn" id="eb-dpad-right">▶</button>
-      </div>
-      <button class="eb-dpad-btn" id="eb-dpad-down">▼</button>
-    </div>
   </div>
 
   <!-- ── Sprachauswahl-Overlay ────────────────────────────── -->

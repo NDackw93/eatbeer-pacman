@@ -198,36 +198,6 @@ google.pacManQuery = function () {
   document.getElementById('eb-overlay').classList.add('active');
 };
 
-// ── On-Screen D-Pad (Tablet) ─────────────────────────────────
-function ebInitDpad() {
-  var dpad = document.getElementById('eb-dpad');
-  if (!dpad) return;
-
-  var keys = {
-    'eb-dpad-up':    38,
-    'eb-dpad-down':  40,
-    'eb-dpad-left':  37,
-    'eb-dpad-right': 39
-  };
-
-  Object.keys(keys).forEach(function (id) {
-    var btn = document.getElementById(id);
-    if (!btn) return;
-    var kc = keys[id];
-    // iOS Safari setzt keyCode bei KeyboardEvent-Konstruktor auf 0 (WebKit-Bug).
-    // Workaround: plain Event + Object.defineProperty erzwingt den richtigen Wert.
-    btn.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      var evt = new Event('keydown', { bubbles: true, cancelable: true });
-      Object.defineProperty(evt, 'keyCode', { get: function () { return kc; } });
-      Object.defineProperty(evt, 'which',   { get: function () { return kc; } });
-      document.dispatchEvent(evt);
-    }, { passive: false });
-  });
-}
-
-ebInitDpad();
-
 // ── Popup anzeigen: Ghost tötet Spieler ─────────────────────
 window.ebHookPlayerDied = function (ghostId, resumeFn) {
   var lang = window.ebLanguage || 'de';
