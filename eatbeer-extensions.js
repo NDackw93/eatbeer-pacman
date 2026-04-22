@@ -198,6 +198,66 @@ google.pacManQuery = function () {
   document.getElementById('eb-overlay').classList.add('active');
 };
 
+// ── On-Screen D-Pad (Tablet) ─────────────────────────────────
+function ebPositionDpad() {
+  var canvasEl = document.getElementById('pcm-c');
+  var dpad     = document.getElementById('eb-dpad');
+  var logoEl   = document.getElementById('logo');
+  if (!canvasEl || !dpad || !logoEl) return;
+  var cr = canvasEl.getBoundingClientRect();
+  var lr = logoEl.getBoundingClientRect();
+  dpad.style.left = (cr.left - lr.left + cr.width / 2) + 'px';
+  dpad.style.top  = (cr.bottom - lr.top + 14) + 'px';
+}
+
+function ebInitDpad() {
+  var dpad = document.getElementById('eb-dpad');
+  if (!dpad) return;
+
+  var keys = {
+    'eb-dpad-up':    38,
+    'eb-dpad-down':  40,
+    'eb-dpad-left':  37,
+    'eb-dpad-right': 39
+  };
+
+  Object.keys(keys).forEach(function (id) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+    var kc = keys[id];
+    btn.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { keyCode: kc, which: kc, bubbles: true })
+      );
+    }, { passive: false });
+  });
+
+  // Wrapping ebPositionGameCanvas stellt sicher, dass D-Pad nach jedem Resize neu positioniert wird
+  if (typeof window.ebPositionGameCanvas === 'function') {
+    var _origPos = window.ebPositionGameCanvas;
+    window.ebPositionGameCanvas = function () {
+      _origPos();
+      ebPositionDpad();
+    };
+  }
+
+  // Initial positionieren — Canvas bereits vorhanden oder auf Erstellung warten
+  if (document.getElementById('pcm-c')) {
+    setTimeout(ebPositionDpad, 50);
+  } else {
+    var obs = new MutationObserver(function () {
+      if (document.getElementById('pcm-c')) {
+        obs.disconnect();
+        setTimeout(ebPositionDpad, 50);
+      }
+    });
+    obs.observe(document.getElementById('logo'), { childList: true, subtree: true });
+  }
+}
+
+ebInitDpad();
+
 // ── Popup anzeigen: Ghost tötet Spieler ─────────────────────
 window.ebHookPlayerDied = function (ghostId, resumeFn) {
   var lang = window.ebLanguage || 'de';
