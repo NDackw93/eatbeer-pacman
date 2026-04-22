@@ -174,11 +174,15 @@
       height: 96px; width: auto; opacity: 0.9;
     }
 
-    /* ── Corner Logo (Startscreen) ───────────────────────────── */
+    /* ── Corner Logo (immer sichtbar, iOS-safe) ─────────────── */
     #eb-corner-logo {
-      position: absolute; bottom: 18px; right: 22px;
-      height: 80px; width: auto; opacity: 0.92;
+      position: fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      right: calc(22px + env(safe-area-inset-right, 0px));
+      height: clamp(48px, 8vw, 80px);
+      width: auto; opacity: 0.92;
       pointer-events: none;
+      z-index: 100;
     }
   </style>
 
