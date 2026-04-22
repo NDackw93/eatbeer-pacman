@@ -199,17 +199,6 @@ google.pacManQuery = function () {
 };
 
 // ── On-Screen D-Pad (Tablet) ─────────────────────────────────
-function ebPositionDpad() {
-  var canvasEl = document.getElementById('pcm-c');
-  var dpad     = document.getElementById('eb-dpad');
-  var logoEl   = document.getElementById('logo');
-  if (!canvasEl || !dpad || !logoEl) return;
-  var cr = canvasEl.getBoundingClientRect();
-  var lr = logoEl.getBoundingClientRect();
-  dpad.style.left = (cr.left - lr.left + cr.width / 2) + 'px';
-  dpad.style.top  = (cr.bottom - lr.top + 14) + 'px';
-}
-
 function ebInitDpad() {
   var dpad = document.getElementById('eb-dpad');
   if (!dpad) return;
@@ -225,35 +214,16 @@ function ebInitDpad() {
     var btn = document.getElementById(id);
     if (!btn) return;
     var kc = keys[id];
+    // iOS Safari setzt keyCode bei KeyboardEvent-Konstruktor auf 0 (WebKit-Bug).
+    // Workaround: plain Event + Object.defineProperty erzwingt den richtigen Wert.
     btn.addEventListener('touchstart', function (e) {
       e.preventDefault();
-      document.dispatchEvent(
-        new KeyboardEvent('keydown', { keyCode: kc, which: kc, bubbles: true })
-      );
+      var evt = new Event('keydown', { bubbles: true, cancelable: true });
+      Object.defineProperty(evt, 'keyCode', { get: function () { return kc; } });
+      Object.defineProperty(evt, 'which',   { get: function () { return kc; } });
+      document.dispatchEvent(evt);
     }, { passive: false });
   });
-
-  // Wrapping ebPositionGameCanvas stellt sicher, dass D-Pad nach jedem Resize neu positioniert wird
-  if (typeof window.ebPositionGameCanvas === 'function') {
-    var _origPos = window.ebPositionGameCanvas;
-    window.ebPositionGameCanvas = function () {
-      _origPos();
-      ebPositionDpad();
-    };
-  }
-
-  // Initial positionieren — Canvas bereits vorhanden oder auf Erstellung warten
-  if (document.getElementById('pcm-c')) {
-    setTimeout(ebPositionDpad, 50);
-  } else {
-    var obs = new MutationObserver(function () {
-      if (document.getElementById('pcm-c')) {
-        obs.disconnect();
-        setTimeout(ebPositionDpad, 50);
-      }
-    });
-    obs.observe(document.getElementById('logo'), { childList: true, subtree: true });
-  }
 }
 
 ebInitDpad();
