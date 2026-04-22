@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // EAT BEER Pac-Man – Extensions
 // Popup-System & Inhalte (DE/EN)
 // Wird nach pacman.js geladen (via s.onload in index.html)
@@ -26,9 +26,9 @@ var EB_ENERGIZER_POPUPS = {
     },
     {
       title: 'CO\u2082 als Ressource',
-      icon: '&#127807;',
+      icon: '&#128168;',
       animFrom: '&#128168; Brauerei-CO\u2082',
-      animTo: '&#127807; Rohstoff',
+      animTo: '&#9851; Rohstoff',
       text: 'Erfasse, verarbeite und verwende CO\u2082 als Rohstoff, anstatt es freizusetzen.'
     },
     {
@@ -56,9 +56,9 @@ var EB_ENERGIZER_POPUPS = {
     },
     {
       title: 'CO\u2082 as a Resource',
-      icon: '&#127807;',
+      icon: '&#128168;',
       animFrom: '&#128168; Brewery CO\u2082',
-      animTo: '&#127807; Raw Material',
+      animTo: '&#9851; Raw Material',
       text: 'Capture, process and reuse CO\u2082 as a raw material instead of releasing it.'
     },
     {

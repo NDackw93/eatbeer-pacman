@@ -1,4 +1,4 @@
-google.pacman ||
+﻿google.pacman ||
 function () {
     // ============================================================
     // Constants & Configuration
@@ -1669,7 +1669,7 @@ function () {
         }
     };
     game.createEnergizerElements = function () {
-        var ebIcons = ['\uD83C\uDF3E', '\uD83D\uDCE6', '\uD83C\uDF3F', '\uD83D\uDD2C'];
+        var ebIcons = ['\uD83C\uDF3E', '\uD83D\uDCE6', '\uD83D\uDCA8', '\uD83D\uDD2C'];
         for (var b in ENERGIZER_POSITIONS) {
             var c = ENERGIZER_POSITIONS[b],
                 d = game.getDotElementId(c.y * 8, c.x * 8);
