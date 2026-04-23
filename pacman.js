@@ -2046,7 +2046,13 @@ function () {
             game.switchMainGhostMode(4, FALSE);
             game.addToScore(200, b);
             game.energizersEatenCount++;
-            if (game.energizersEatenCount >= ENERGIZER_POSITIONS.length) game.activatePermanentFright();
+            var ebAllGone = true;
+            for (var ei2 = 0; ei2 < ENERGIZER_POSITIONS.length; ei2++) {
+                var ep2 = ENERGIZER_POSITIONS[ei2];
+                if (ep2.y * 8 === c[0] && ep2.x * 8 === c[1]) continue;
+                if (game.playfield[ep2.y * 8][ep2.x * 8].dot == 2) { ebAllGone = false; break; }
+            }
+            if (ebAllGone) game.activatePermanentFright();
             if (window.ebHookEnergizerEaten) {
                 var energizerIdx = 0;
                 for (var ei = 0; ei < ENERGIZER_POSITIONS.length; ei++) {

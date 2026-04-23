@@ -475,6 +475,7 @@ Das Spiel wurde visuell vollständig auf die EAT BEER-Marke umgestellt:
   - Nach Klick auf START: Wechsel zu `eatbeer-bg-retro-2.png` — ein rahmenbildendes Artwork mit freiem Spielfeld-Bereich in der Mitte
 - **Dynamische Canvas-Positionierung** (`index.html`): Ein JavaScript-Resize-Handler (`ebPositionGameCanvas`) berechnet beim Laden und bei jedem Fensterwechsel exakt, wo das Spielfeld im Hintergrundbild platziert und wie stark es skaliert werden muss (`transform: scale()`), damit es pixelgenau im dunklen Rahmenbereich des Artworks sitzt — unabhängig von der Auflösung oder Fenstergröße
 - **„EAT BEER"-Wasserzeichen** im Spielfeld als halbtransparentes CSS-Pseudoelement
+- **EAT BEER Corner-Logo** (`#eb-corner-logo`) — immer sichtbar, auch auf Tablets: `position: fixed` mit `env(safe-area-inset-bottom/right)` verhindert, dass das Logo hinter dem Browser-Chrome oder der iOS Home-Indicator-Leiste verschwindet (auf iOS Safari umfasst `100vh` die Browser-Chrome-Höhe, weshalb `position: absolute` in diesem Kontext unzuverlässig ist)
 
 ---
 
@@ -490,9 +491,18 @@ Eine neue Datei `eatbeer-extensions.js` erweitert das Spiel um ein zweisprachige
 
 | Auslöser | Inhalt | Anzahl Varianten |
 |---|---|---|
-| Energizer gefressen | Erklärt einen EAT BEER-Kreislaufprozess (Biertreber, CO₂, Hefe, Verpackung, Abwärme) | 5, rotierend |
+| Energizer gefressen | Erklärt einen EAT BEER-Kreislaufprozess | 4 (je Energizer) |
 | Spieler stirbt (Geist berührt) | Erklärt die thematische Verlustquelle des jeweiligen Geistes | 4 (je Geist) |
 | Alle Geister besiegt | Gewinn-Popup | 1 |
+
+Die vier Energizer-Popups und ihre Symbole (konsistent über Maze, Popup-Icon und Animation):
+
+| # | Thema | Maze / Icon | Animation |
+|---|---|---|---|
+| 0 | Biertreber (BSG) als Tierfutter | 🌾 | 🌾 → 🧪 |
+| 1 | Nachhaltige Verpackung | 📦 | 🌾 → ♻️ |
+| 2 | CO₂ als Ressource | 💨 | 💨 → ♻️ |
+| 3 | Bierhefe (BSY) als Nährstoff | 🔬 | 🍺 → 🧪 |
 
 Das Spiel pausiert während eines Popups; nach Bestätigung läuft es weiter (`ebResumeCallback`-Mechanismus).
 
@@ -539,6 +549,26 @@ if (this.mode == 128 && b == 4 && !game.permanentFright) b = game.lastMainGhostM
 **Fix B** (`detectCollisions()`): Zusätzliche Absicherung — permanent gefressene Geister können nie `playerDies()` auslösen:
 ```javascript
 !game.actors[b].permanentlyEaten && game.playerDies(c)
+```
+
+#### Bug 3 — permanentFright triggert nicht nach Tod mit bereits gefressenen Energizern
+
+`restartGameplay()` (aufgerufen bei jedem Tod via `newLife()`) setzte `energizersEatenCount = 0` zurück. `resetPlayfield()` — das die Energizer-Dots auf dem Spielfeld wiederherstellt — wird jedoch nur in `newLevel()` aufgerufen, nicht bei einem Tod. Folge: Isst der Spieler z. B. 2 Energizer und stirbt, fehlen diese Dots weiterhin auf dem Spielfeld; der Counter startet aber neu bei 0. Die anschließend gegessenen 2 verbleibenden Energizer bringen den Counter nur auf 2 statt 4 — `activatePermanentFright()` wird nie aufgerufen.
+
+**Fix** (`pacman.js`, `dotEaten()`): Der Counter-Vergleich `energizersEatenCount >= ENERGIZER_POSITIONS.length` wurde durch einen direkten Spielfeld-Scan ersetzt. Nach dem Fressen jedes Energizers wird geprüft, ob alle anderen Energizer-Positionen im `playfield`-Grid bereits leer sind (`dot != 2`). Das ist zustandsunabhängig und funktioniert korrekt auch nach Toden mit teilweise gefressenen Energizern.
+
+```javascript
+// Vorher:
+if (game.energizersEatenCount >= ENERGIZER_POSITIONS.length) game.activatePermanentFright();
+
+// Nachher:
+var ebAllGone = true;
+for (var ei2 = 0; ei2 < ENERGIZER_POSITIONS.length; ei2++) {
+    var ep2 = ENERGIZER_POSITIONS[ei2];
+    if (ep2.y * 8 === c[0] && ep2.x * 8 === c[1]) continue; // aktuellen Energizer überspringen (Dot noch nicht gelöscht)
+    if (game.playfield[ep2.y * 8][ep2.x * 8].dot == 2) { ebAllGone = false; break; }
+}
+if (ebAllGone) game.activatePermanentFright();
 ```
 
 #### Sound-Fix — Ambient-Eyes-Sound spielt während permanentFright

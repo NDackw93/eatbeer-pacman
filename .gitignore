@@ -8,3 +8,7 @@ Thumbs.db
 # Editor files
 *.swp
 *.swo
+
+# Lokale Dokumente
+PRESENTATION.md
+eb-energizer-test.html
